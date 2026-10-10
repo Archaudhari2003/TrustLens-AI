@@ -1,0 +1,46 @@
+[
+  {
+    "id": "ordinary-https-page",
+    "url": "https://library.example/",
+    "signals": {
+      "credentialFormCount": 1,
+      "crossDomainCredentialHosts": [],
+      "paymentFieldCount": 0,
+      "externalLinkCount": 3
+    },
+    "expectedClassification": "low",
+    "note": "A same-domain password form and external links alone are not strong risk indicators."
+  },
+  {
+    "id": "numeric-host",
+    "url": "https://192.0.2.4/account",
+    "signals": {
+      "isIpAddress": true,
+      "crossDomainCredentialHosts": []
+    },
+    "expectedClassification": "medium",
+    "note": "Numeric host is a review signal, not proof of fraud."
+  },
+  {
+    "id": "credential-form-cross-domain",
+    "url": "https://accounts.example/login",
+    "signals": {
+      "protocol": "https:",
+      "credentialFormCount": 1,
+      "crossDomainCredentialHosts": ["login-desk.example"]
+    },
+    "expectedClassification": "high",
+    "note": "A password form targeting a different hostname is a high-contribution signal."
+  },
+  {
+    "id": "sensitive-form-over-http",
+    "url": "http://accounts.example/login",
+    "signals": {
+      "protocol": "http:",
+      "credentialFormCount": 1,
+      "crossDomainCredentialHosts": []
+    },
+    "expectedClassification": "high",
+    "note": "Sensitive inputs observed on an unencrypted page are high risk."
+  }
+]

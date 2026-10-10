@@ -1,0 +1,28 @@
+{
+  "manifest_version": 3,
+  "name": "TrustLens AI — Website Risk Inspector",
+  "version": "0.1.0",
+  "minimum_chrome_version": "116",
+  "description": "Understand observable website risk signals with local-first page inspection.",
+  "action": {
+    "default_title": "TrustLens AI",
+    "default_popup": "popup/popup.html"
+  },
+  "side_panel": {
+    "default_path": "popup/popup.html"
+  },
+  "background": {
+    "service_worker": "background.js",
+    "type": "module"
+  },
+  "permissions": [
+    "activeTab",
+    "scripting",
+    "storage",
+    "clipboardWrite",
+    "sidePanel",
+    "notifications",
+    "offscreen"
+  ],
+  "host_permissions": ["http://*/*", "https://*/*"]
+}

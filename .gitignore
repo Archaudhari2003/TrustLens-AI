@@ -1,0 +1,13 @@
+node_modules/
+dist/
+coverage/
+.pytest_cache/
+.coverage
+.vite/
+*.tsbuildinfo
+.env
+.env.*
+!.env.example
+__pycache__/
+.venv/
+venv/
