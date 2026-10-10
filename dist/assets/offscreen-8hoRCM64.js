@@ -1,0 +1,1 @@
+import"./modulepreload-polyfill-B5Qt9EMX.js";const t=new Audio(chrome.runtime.getURL("flutie8211-high-pitch-alarm-buzzer-464349.mp3"));t.preload="auto";chrome.runtime.onMessage.addListener(r=>{(r==null?void 0:r.type)==="trustlens.play-risk-alert"&&(t.currentTime=0,t.play().catch(e=>{console.error("TrustLens could not play the risk alert sound.",e)}))});
