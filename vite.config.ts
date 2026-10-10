@@ -36,6 +36,12 @@ export default defineConfig({
         );
         copyFileSync(resolve(projectRoot, "extension/manifest.json"), resolve(projectRoot, "dist/manifest.json"));
         copyFileSync(resolve(projectRoot, "extension/icons/trustlens.svg"), resolve(projectRoot, "dist/icons/trustlens.svg"));
+        for (const size of [16, 32, 48, 128]) {
+          copyFileSync(
+            resolve(projectRoot, `extension/icons/trustlens-${size}.png`),
+            resolve(projectRoot, `dist/icons/trustlens-${size}.png`)
+          );
+        }
         copyFileSync(
           resolve(projectRoot, "flutie8211-high-pitch-alarm-buzzer-464349.mp3"),
           resolve(projectRoot, "dist/flutie8211-high-pitch-alarm-buzzer-464349.mp3")

@@ -105,8 +105,7 @@ svg { flex: none; }
   border-bottom: 1px solid var(--border);
 }
 .brand { display: inline-flex; align-items: center; gap: 9px; border: 0; padding: 0; background: transparent; cursor: pointer; }
-.brand-mark { width: 27px; height: 27px; display: grid; place-items: center; color: #fff; background: #173d68; border-radius: 8px; }
-:root[data-theme="dark"] .brand-mark { color: #102039; background: #a9c9ef; }
+.brand-logo { width: 27px; height: 27px; display: block; border-radius: 8px; }
 .brand-name { font-size: 14px; line-height: 1; font-weight: 720; letter-spacing: -.35px; }
 .brand-name span { color: var(--muted); font-weight: 500; }
 .header-actions { display: flex; align-items: center; gap: 10px; }
@@ -454,12 +453,10 @@ body {
 }
 
 .brand { gap: 7px; }
-.brand-mark {
+.brand-logo {
   width: 25px;
   height: 27px;
   border-radius: 7px;
-  color: #20db83;
-  background: #123e68;
 }
 .brand-copy { display: grid; gap: 2px; text-align: left; }
 .brand-name { color: var(--text); font-size: 11px; letter-spacing: -.1px; }

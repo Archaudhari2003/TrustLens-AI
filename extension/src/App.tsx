@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
+import trustlensLogo from "../icons/trustlens.svg";
 import {
   AlertTriangle,
   ArrowLeft,
@@ -257,7 +258,7 @@ function App() {
     <main className="app-shell">
       <header className="app-header">
         <button className="brand" type="button" onClick={() => goTo("popup")} aria-label="TrustLens AI home">
-          <span className="brand-mark"><Shield size={17} strokeWidth={2.2} /></span>
+          <img className="brand-logo" src={trustlensLogo} alt="" />
           <span className="brand-copy">
             <span className="brand-name">TrustLens AI</span>
             <span className="brand-tagline">Smart Web Trust Engine</span>
@@ -729,7 +730,7 @@ function SettingsScreen({ settings, settingsLoaded, updateSetting, open }: {
         <SettingRow icon={<AlertTriangle size={16} />} title="Risk warnings" description="Show clear recommendations when a scan finds concerning signals." trailing={<Switch checked={settings.showRiskWarnings} label="Risk warnings" onChange={(checked) => void updateSetting("showRiskWarnings", checked)} />} />
         <SettingRow icon={<History size={16} />} title="Scan history" description="Save hostnames, scan times, and summary scores on this device." trailing={<Switch checked={settings.saveScanHistory} label="Scan history" onChange={(checked) => void updateSetting("saveScanHistory", checked)} />} />
         <SettingRow icon={<Info size={16} />} title="Scan completion alert" description="Show a brief in-popup status after each scan." trailing={<Switch checked={settings.scanAlerts} label="Scan completion alert" onChange={(checked) => void updateSetting("scanAlerts", checked)} />} />
-        <SettingRow icon={<ShieldAlert size={16} />} title="Automatic bad-site detection" description="Inspect HTTP/HTTPS pages locally as they load; high-risk alerts require a strong finding." trailing={<Switch checked={settings.autoDetectBadSites} label="Automatic bad-site detection" onChange={(checked) => void updateSetting("autoDetectBadSites", checked)} />} />
+        <SettingRow icon={<ShieldAlert size={16} />} title="Automatic bad-site detection" description="Inspect HTTP/HTTPS pages locally as they load; medium- and high-risk findings trigger alerts." trailing={<Switch checked={settings.autoDetectBadSites} label="Automatic bad-site detection" onChange={(checked) => void updateSetting("autoDetectBadSites", checked)} />} />
         <SettingRow icon={<Info size={16} />} title="Beep alert" description="Beep only when automatic detection finds a strong high-risk signal." trailing={<Switch checked={settings.beepAlerts} label="Beep alert" onChange={(checked) => void updateSetting("beepAlerts", checked)} />} />
       </div>
       <div className="settings-group">

@@ -1,4 +1,5 @@
-import type { PageDomMetadata, UserSettings } from "./shared/result-schema";
+import type { PageDomMetadata, RiskLevel, UserSettings } from "./shared/result-schema";
+import { shouldSendAutomaticRiskAlert } from "./shared/automatic-risk-alert";
 import { inspectPage } from "./scanner/dom-analyzer";
 import { buildPageResult } from "./scanner/scanningService";
 
@@ -33,24 +34,27 @@ async function ensureOffscreenDocument(): Promise<void> {
   await offscreenCreation;
 }
 
-async function notifyHighRisk(tabId: number, host: string, beepAlerts: boolean): Promise<void> {
+async function notifyRisk(tabId: number, host: string, classification: Exclude<RiskLevel, "low">, beepAlerts: boolean): Promise<void> {
+  const isHighRisk = classification === "high";
   try {
-    await chrome.notifications.create(`trustlens-high-risk-${tabId}`, {
+    await chrome.notifications.create(`trustlens-${classification}-risk-${tabId}`, {
       type: "basic",
       iconUrl: chrome.runtime.getURL("icons/trustlens.svg"),
-      title: "TrustLens detected a high-risk page",
-      message: `${host} has strong risk indicators. Avoid entering passwords or payment details until verified.`,
-      priority: 2
+      title: `TrustLens detected a ${classification}-risk page`,
+      message: isHighRisk
+        ? `${host} has strong risk indicators. Avoid entering passwords or payment details until verified.`
+        : `${host} has signals that merit caution. Verify the address before sharing sensitive information.`,
+      priority: isHighRisk ? 2 : 1
     });
   } catch (error) {
-    console.error(`TrustLens could not show a risk notification for ${host}.`, error);
+    console.error(`TrustLens could not show a ${classification}-risk notification for ${host}.`, error);
   }
-  if (beepAlerts) {
+  if (beepAlerts && isHighRisk) {
     try {
       await ensureOffscreenDocument();
       await chrome.runtime.sendMessage({ type: "trustlens.play-risk-alert" });
     } catch (error) {
-      console.error(`TrustLens could not play the risk alert for ${host}.`, error);
+      console.error(`TrustLens could not play the high-risk alert for ${host}.`, error);
     }
   }
 }
@@ -76,15 +80,17 @@ async function inspectTab(tabId: number, address: string): Promise<void> {
     if (!metadata) return;
 
     const result = buildPageResult(address, metadata);
-    if (result.classification !== "high") return;
+    if (result.classification === "low") return;
     const currentSettings = await getDetectionSettings();
     if (!currentSettings.autoDetectBadSites) return;
 
     const alertKey = `${ALERT_PREFIX}${tabId}`;
     const alerted = await chrome.storage.session.get(alertKey);
-    if (alerted[alertKey] === result.host) return;
-    await chrome.storage.session.set({ [alertKey]: result.host });
-    await notifyHighRisk(tabId, result.host, currentSettings.beepAlerts);
+    if (!shouldSendAutomaticRiskAlert(result.host, result.classification, alerted[alertKey])) return;
+    await chrome.storage.session.set({
+      [alertKey]: { host: result.host, classification: result.classification }
+    });
+    await notifyRisk(tabId, result.host, result.classification, currentSettings.beepAlerts);
   } catch (error) {
     console.error(`Automatic TrustLens inspection failed for tab ${tabId}.`, error);
   }

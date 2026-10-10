@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { demoFixtures } from "../extension/shared/demoFixtures";
+import { shouldSendAutomaticRiskAlert } from "../extension/shared/automatic-risk-alert";
 import { analyzeForms } from "../extension/scanner/form-analyzer";
 import { analyzeRedirectTiming } from "../extension/scanner/redirect-analyzer";
 import { buildLocalResult } from "../extension/scanner/risk-engine";
@@ -34,6 +35,33 @@ describe("local risk assessment", () => {
     const result = buildLocalResult({ ...safeSignals, host: "192.0.2.4", isIpAddress: true }, "2026-10-10T00:00:00.000Z");
     expect(result.classification).toBe("medium");
     expect(result.evidence[0]?.severity).toBe("medium");
+  });
+
+  it("alerts on medium risk and escalates an existing medium alert to high", () => {
+    expect(shouldSendAutomaticRiskAlert("192.0.2.4", "medium", undefined)).toBe(true);
+    expect(shouldSendAutomaticRiskAlert("192.0.2.4", "medium", {
+      host: "192.0.2.4",
+      classification: "medium"
+    })).toBe(false);
+    expect(shouldSendAutomaticRiskAlert("192.0.2.4", "high", {
+      host: "192.0.2.4",
+      classification: "medium"
+    })).toBe(true);
+    expect(shouldSendAutomaticRiskAlert("192.0.2.4", "high", "192.0.2.4")).toBe(false);
+    expect(shouldSendAutomaticRiskAlert("library.example", "low", undefined)).toBe(false);
+  });
+
+  it("detects a medium-risk website through the automatic page assessment", () => {
+    const result = buildPageResult("https://192.0.2.4/", {
+      forms: [],
+      externalLinkCount: 0,
+      externalResourceHosts: [],
+      redirectCount: 0
+    }, "2026-10-10T00:00:00.000Z");
+
+    expect(result.classification).toBe("medium");
+    expect(result.evidence[0]?.id).toBe("numeric-host");
+    expect(shouldSendAutomaticRiskAlert(result.host, result.classification, undefined)).toBe(true);
   });
 
   it("does not treat combined weaker URL signals as a high-risk page", () => {
